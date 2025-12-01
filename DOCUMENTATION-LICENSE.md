@@ -1,6 +1,6 @@
 # Documentation License – Creative Commons Attribution 4.0 (CC BY 4.0)
 
-The specification documents and presentations contained in this repository
+The specification documents and other documents such as presentations contained in this repository
 are licensed under the **Creative Commons Attribution 4.0 International
 License (CC BY 4.0)**.
 
