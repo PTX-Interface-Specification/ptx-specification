@@ -11,6 +11,8 @@ The goal of PTX is to define a stable, interoperable interface so that:
 - Implementations share a common, versioned set of messages and semantics.
 - Changes to the specification are discussed openly and applied consistently.
 
+For a summary of expected benefits to operators and procurement, see BENEFITS.md.
+
 ## Scope
 
 This repository will contain:
