@@ -1,0 +1,67 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxDmLogMessage",
+    "definitions": {
+        "PtxDmLogMessage": {
+            "required": [
+                "msg_header",
+                "timestamp",
+                "level",
+                "tag",
+                "msg"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, 3 decimals]",
+                    "format": "date-time"
+                },
+                "level": {
+                    "enum": [
+                        "LEVEL_UNKNOWN",
+                        "LEVEL_OFF",
+                        "LEVEL_FATAL",
+                        "LEVEL_ERROR",
+                        "LEVEL_WARNING",
+                        "LEVEL_INFO"
+                    ],
+                    "type": "string",
+                    "title": "Dm Device Log Level Enum"
+                },
+                "tag": {
+                    "type": "string"
+                },
+                "msg": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Dm Log Message"
+        },
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, 3 decimals]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "integer",
+                    "description": "initial version = 1"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        }
+    }
+}

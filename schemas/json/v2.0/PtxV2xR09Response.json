@@ -1,0 +1,70 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxV2xR09Response",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxV2xR09Response": {
+            "required": [
+                "msg_header",
+                "transaction_id",
+                "priority_status",
+                "distance_to_stop_line",
+                "intersection_id"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "transaction_id": {
+                    "type": "integer"
+                },
+                "priority_status": {
+                    "enum": [
+                        "STATUS_UNKNOWN",
+                        "STATUS_REQUESTED",
+                        "STATUS_PROCESSING",
+                        "STATUS_TRAFFIC",
+                        "STATUS_GRANTED",
+                        "STATUS_REJECTED",
+                        "STATUS_MAX",
+                        "STATUS_LOCKED",
+                        "STATUS_TIMEOUT"
+                    ],
+                    "type": "string",
+                    "title": "V 2 X Priority Status"
+                },
+                "distance_to_stop_line": {
+                    "type": "number",
+                    "description": "[m, max. 1 decimal]"
+                },
+                "intersection_id": {
+                    "type": "string",
+                    "description": "intersection from which SSM was received"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx V 2 XR 09 Response"
+        }
+    }
+}

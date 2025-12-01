@@ -1,0 +1,19 @@
+/**
+ * (C) 2024, Trapeze Switzerland GmbH. All rights reserved.
+ */
+
+syntax = "proto3";
+
+package io.ptx.proto; // tentative
+
+import "google/protobuf/timestamp.proto";
+
+import "chrusty/protoc-gen-jsonschema/options.proto";
+
+option java_multiple_files = true;
+
+message PtxHeader {
+    google.protobuf.Timestamp timestamp = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [RFC 3339, 3 decimals]
+    int32 version = 2 [(protoc.gen.jsonschema.field_options).required = true]; // initial version = 1
+} // the header itself is not versioned -- only compatible extensions!!
+

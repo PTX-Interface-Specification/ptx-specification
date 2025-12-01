@@ -1,0 +1,177 @@
+/**
+ * (C) 2024, Trapeze Switzerland GmbH. All rights reserved.
+ */
+
+syntax = "proto3";
+
+package io.ptx.v2.dm; // tentative
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+import "chrusty/protoc-gen-jsonschema/options.proto";
+
+option java_multiple_files = true;
+
+import "PTX_Framing_DTO.proto";
+
+
+message PtxDmEnum {
+
+    enum DmDeviceModuleClassEnum {
+        CLASS_UNKNOWN = 0; // for extensibility (never used)
+        CLASS_HW = 1; // hardware
+        CLASS_FW = 2; // firmware
+        CLASS_OS = 3; // operating system
+        CLASS_SW = 4; // software
+        CLASS_DATA = 5; // data supply
+        CLASS_CFG = 6; // configuration data
+    }
+
+    enum DmDeviceReachabilityEnum { // tells whether or not status data is available at all
+        REACHABLE_UNKNOWN = 0; // for extensibility (never used)
+        REACHABLE_DIRECT = 1; // the device reports directly
+        REACHABLE_YES = 2; // the device is proxied and can be reached
+        REACHABLE_NO = 3; // the device is proxied and cannot be reached
+    }
+
+    enum DmDeviceActivationEnum { // tells whether or not status reporting makes sense
+        STATUS_UNKNOWN = 0; // used when proxied device is not reachable
+        STATUS_ACTIVE = 1; // device is active and shall be monitored
+        STATUS_INACTIVE = 2; // device is inactive (will not send any updates for a while)
+    }
+
+    enum DmDeviceHealthEnum { // general health status
+        HEALTH_UNKNOWN = 0; // used when proxied device is not reachable
+        HEALTH_OK = 1; // functionality is fully available
+        HEALTH_INFO = 2; // functionality not impaired
+        HEALTH_YELLOW = 3; // functionality impaired
+        HEALTH_RED = 4; // functionality strongly impaired or not available
+    }
+
+    enum DmDeviceTriggerEnum { // triggers the device to do something
+        TRIGGER_UNKNOWN = 0; // for extensibility (never used)
+        TRIGGER_REBOOT = 1; // instructs the device to reboot
+        TRIGGER_PUBLISH = 2; // instructs the device to publish "something"
+	}
+
+    enum DmDeviceLogLevelEnum {
+        LEVEL_UNKNOWN = 0; // for extensibility (never used)
+        LEVEL_OFF = 1; // log nothing
+        LEVEL_FATAL = 2; // fatal errors render the device useless
+        LEVEL_ERROR = 3; // errors prevent normal execution
+        LEVEL_WARNING = 4; // warnings indicate that something unexpected happened
+        LEVEL_INFO = 5; // information messages are significant to the purpose
+    }
+
+    enum DmDevicePowerStateEnum {
+        POWER_STATE_UNKNOWN = 0; // for extensibility (never used)
+        POWER_ACTIVE = 1; // "PWR" is fully available
+        SWITCH_OFF_PLANNED = 2; // "PWR" signal switched off soon (extensions possible)
+        SWITCH_OFF_IMMINENT = 3; // "PWR" signal switched off soon (no extensions)
+    }
+
+}
+
+
+message PtxDmPowerState {
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxDmEnum.DmDevicePowerStateEnum power_state = 2 [(protoc.gen.jsonschema.field_options).required = true];
+    google.protobuf.BoolValue ignition_on = 3;
+    google.protobuf.BoolValue comm_available = 4;
+    google.protobuf.BoolValue bulk_available = 5;
+    google.protobuf.Timestamp shutdown_not_before = 6; // [RFC 3339, cf. §5.2]
+}
+
+
+message PtxDmLogLevel {
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxDmEnum.DmDeviceLogLevelEnum level = 2 [(protoc.gen.jsonschema.field_options).required = true];
+}
+
+
+message PtxDmTrigger {
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxDmEnum.DmDeviceTriggerEnum cmd = 2 [(protoc.gen.jsonschema.field_options).required = true];
+    repeated string args = 3;
+}
+
+
+message PtxDmPowerRequest {
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    google.protobuf.Timestamp extension = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [RFC 3339, cf. §5.2]
+    bool comm_request = 3 [(protoc.gen.jsonschema.field_options).required = true];
+    bool bulk_request = 4 [(protoc.gen.jsonschema.field_options).required = true];
+}
+
+
+message PtxDmLogMessage {
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    google.protobuf.Timestamp timestamp = 2  [(protoc.gen.jsonschema.field_options).required = true]; // [RFC 3339, cf. §5.2]
+    PtxDmEnum.DmDeviceLogLevelEnum level = 3  [(protoc.gen.jsonschema.field_options).required = true];
+    string tag = 4 [(protoc.gen.jsonschema.field_options).required = true];
+    string msg = 5 [(protoc.gen.jsonschema.field_options).required = true];
+}
+
+
+message PtxDmPresence {
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    string description = 2 [(protoc.gen.jsonschema.field_options).required = true];
+    bool active = 3 [(protoc.gen.jsonschema.field_options).required = true];
+
+}
+
+
+message PtxDmVersion {
+
+    message DmModuleVersion {
+        PtxDmEnum.DmDeviceModuleClassEnum module_class = 1 [(protoc.gen.jsonschema.field_options).required = true];
+        string name = 2 [(protoc.gen.jsonschema.field_options).required = true];
+        string version = 3 [(protoc.gen.jsonschema.field_options).required = true];
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    string description = 2 [(protoc.gen.jsonschema.field_options).required = true];
+    repeated DmModuleVersion module = 3;
+
+}
+
+
+/**
+ * This message is used in a variety of contexts:
+ * - an on-board computer reports its own health
+ * - an on-board computer reports the health of a connected device (OBC acts as a proxy)
+ * - an on-board device reports its own health
+ * - an on-board device reports the health of a connected device (the first device acts as a proxy)
+ *
+ * The most important attributes are:
+ * - description: The description (of the device for which the health is reported) allows
+ *   the device to be identified and found on-board or at the stop
+ * - health: Based on this attribute, the remote monitoring personnel will be alarmed
+ * - reason: Whenever the health is not "OK", the reason must be provided in a plain English
+ *   sentence that is targeted to humans. If there are multiple reasons, then the reasons shall
+ *   be concatenated.
+ *
+ * It is not sufficient to show the CPU load. If the CPU load is deemed unhealthy, the "health"
+ * attribute must reflect this situation.
+ */
+message PtxDmHealth  {
+
+    message DmResourceUsage {
+        float cpu = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [0%..100%, max. 1 decimal] overall CPU load (running average)
+        float ram = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [0%..100%, max. 1 decimal] usage of the RAM
+        float disk = 3 [(protoc.gen.jsonschema.field_options).required = true]; // [0%..100%, max. 1 decimal] usage of the (exactly 1) monitored partition
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    string description = 2 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxDmEnum.DmDeviceReachabilityEnum reachability = 3 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxDmEnum.DmDeviceActivationEnum activation = 4 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxDmEnum.DmDeviceHealthEnum health = 5 [(protoc.gen.jsonschema.field_options).required = true];
+    google.protobuf.StringValue reason = 6;
+    DmResourceUsage usage = 7;
+    int32 uptime = 8 [(protoc.gen.jsonschema.field_options).required = true]; // [s] time since last boot
+
+}
+

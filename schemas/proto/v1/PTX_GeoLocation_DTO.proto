@@ -1,0 +1,34 @@
+/**
+ * (C) 2024, Trapeze Switzerland GmbH. All rights reserved.
+ */
+
+syntax = "proto3";
+
+package io.ptx.geo.v0.proto; // tentative
+
+import "google/protobuf/wrappers.proto";
+
+import "chrusty/protoc-gen-jsonschema/options.proto";
+
+option java_multiple_files = true;
+
+import "PTX_Framing_DTO.proto";
+
+
+message PtxGeoLocation {
+
+    message GeoLocation {
+        double latitude = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [deg WGS-84, -90..+90, pos. = N, 6 decimals]
+        double longitude = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [deg WGS-84, -180..+180, pos. = E, 6 decimals]
+        google.protobuf.FloatValue accuracy = 3; // [m, non-neg., max. 1 decimals]
+        google.protobuf.FloatValue altitude = 4; // [m, pos. = up, 1 decimal]
+        google.protobuf.FloatValue vertical_accuracy = 5; // [m, non-neg., max. 1 decimal]
+        google.protobuf.FloatValue heading = 6; // [deg 0..360, 0 = true north, 90 = east, max. 1 decimal]
+        google.protobuf.FloatValue speed = 7; // [m/s, max. 2 decimals] speed from GNSS
+    }
+
+    io.ptx.proto.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    GeoLocation geo_loc = 2 [(protoc.gen.jsonschema.field_options).required = true]; // GNSS-based
+    google.protobuf.Int32Value sat_count = 3;
+
+}

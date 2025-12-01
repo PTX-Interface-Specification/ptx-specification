@@ -1,0 +1,168 @@
+/**
+ * (C) 2024, Trapeze Switzerland GmbH. All rights reserved.
+ */
+
+syntax = "proto3";
+
+package io.ptx.v2.oi; // tentative
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+import "chrusty/protoc-gen-jsonschema/options.proto";
+
+option java_multiple_files = true;
+
+import "PTX_Framing_DTO.proto";
+
+
+message PtxOiEnum {
+
+    enum OiVehicleCategory {
+        CAT_OTHER = 0; // unknown or "other"
+        CAT_BUS = 1; // incl. articulated, google.protobuf.DoubleValue decker, rapid, ...
+        CAT_TROLLEY = 2; // trolley bus
+        CAT_TRAM = 3; // rail vehicle that may circulate on public roads
+        CAT_RAIL = 4; // light rail, subway, heavy rail, magnetic rail, ...
+        CAT_FUNI = 5; // rail shuttle (linear track)
+        CAT_GONDOLA = 6; // suspended shuttle (linear track)
+        CAT_FERRY = 7; // waterway vehicle
+    }
+
+    enum OiLocationStatus {
+        LOC_UNKNOWN = 0; // for extensibility (never used)
+        LOC_NONE = 1; // not currently logged onto a journey or pattern
+        LOC_OFF_COURSE = 2; // logged onto a journey or pattern, off-course
+        LOC_ON_COURSE = 3; // logged onto a journey or pattern, on-course
+    }
+
+    enum OiPriorityLevel {
+        PRIO_UNKNOWN = 0; // for extensibility (never used)
+        PRIO_NORMAL = 1; // priority to be requested
+        PRIO_OFF_AT_STOP = 2; // priority not to be requested (at stop)
+        PRIO_OFF = 3; // priority not to be requested (non-commercial operation)
+    }
+
+    enum OiDriverCabActivation {
+        CAB_UNKNOWN = 0; // for extensibility (never used)
+        CAB_NONE = 1; // no cab is active
+        CAB_A = 2; // cab A is active
+        CAB_B = 3; // cab B is active
+    }
+
+    enum OiDoorSide {
+        DOOR_SIDE_UNKNOWN = 0; // for extensibility (never used)
+        DOOR_SIDE_NONE = 1; // there are no passenger doors (e.g. in an emergency vehicle)
+        DOOR_SIDE_RIGHT = 2; // the passenger doors are on the right-hand side in driving direction
+        DOOR_SIDE_LEFT = 3; // the passenger doors are on the left-hand side in driving direction
+        DOOR_SIDE_BOTH = 4; // the passenger doors are on both sides
+    }
+
+}
+
+
+message PtxOiVehicleInfo {
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxOiEnum.OiVehicleCategory category = 2 [(protoc.gen.jsonschema.field_options).required = true];
+    google.protobuf.StringValue type = 3; // for debugging only, non-null and non-empty if provided
+    google.protobuf.BoolValue is_public_service_vehicle = 4; // gravity towards psv lanes
+    google.protobuf.BoolValue is_emergency_vehicle = 5; // might overtake other vehicles or disrespect traffic lights
+    PtxOiEnum.OiDoorSide door_side = 6; // can be used for lane selection
+    google.protobuf.BoolValue has_trailer = 7; // true indicates presence of trailers
+    google.protobuf.Int32Value nof_vehicles = 8; // >1 indicates coupling (tram or train)
+    google.protobuf.FloatValue weight = 9; // [kg, 0 decimals] sum for whole train
+    google.protobuf.FloatValue length = 10; // [m, max. 2 decimals] sum for whole train
+    google.protobuf.FloatValue width = 11; // [m, max. 2 decimals] max for whole train
+    google.protobuf.FloatValue height = 12; // [m, max. 2 decimals] max for whole train
+    google.protobuf.Int32Value capacity = 13; // [pax] sum for whole train
+    google.protobuf.StringValue plate = 14; // non-null and non-empty if provided
+    google.protobuf.StringValue vin = 15; // non-null and non-empty if provided
+}
+
+
+message PtxOiOperationalLogon { // IDs refer to VDV452 and VDV455B
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    string vehicle_id = 2 [(protoc.gen.jsonschema.field_options).required = true]; // VDV452/443 VEHICLE(FAHRZEUG)::VEHICLE_NO(FZG_NR)
+    google.protobuf.StringValue driver_id = 3; // VDV455B DRIVER(PERSONAL)::DRIVER_NR(FAHRER_NR)
+    google.protobuf.StringValue block_id = 4; // VDV452/310 BLOCK::BLOCK_NO(UM_UID)
+    google.protobuf.StringValue journey_id = 5; // VDV452/715 JOURNEY(REC_FRT)::JOURNEY_NO(FRT_FID)
+    google.protobuf.StringValue pattern_id = 6; // VDV452/226 LINE(REC_LID)::ROUTE_NO(ROUTEN_NR)
+    google.protobuf.StringValue line_id = 7; // VDV452/226 LINE(REC_LID)::LINE_NO(LI_NR)
+    google.protobuf.StringValue direction_id = 8; // VDV452/226 LINE(REC_LID)::DIRECTION(LI_RI_NR)
+    google.protobuf.StringValue run_id = 9; // VDV452/715 JOURNEY(REC_FRT)::RUN(LI_KU_NR)
+}
+
+
+message PtxOiOperationalJourney { // IDs refer to VDV452
+
+    message OiJourneyCall {
+
+        message OiStopPoint {
+            string id = 1 [(protoc.gen.jsonschema.field_options).required = true]; // if planned stop point: VDV452/253 STOP(REC_ORT)::POINT_NO(ORT_NR)
+            string name = 2 [(protoc.gen.jsonschema.field_options).required = true]; // stop short name + "-" + point nr (for debugging purposes)
+            google.protobuf.DoubleValue lat = 3; // [deg WGS-84, -90..+90, pos. = N] mandatory if available
+            google.protobuf.DoubleValue lon = 4; // [deg WGS-84, -180..+180, pos. = E] mandatory if available
+            google.protobuf.FloatValue heading = 5; // [deg 0..360, 0 = true north, 90 = east] mandatory if available
+        }
+
+        message OiCallData {
+            google.protobuf.Timestamp timestamp = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [RFC 3339, cf. §5.2]
+        }
+
+        int32 call_seq = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [#, 1-based]
+        OiStopPoint stop_point = 2 [(protoc.gen.jsonschema.field_options).required = true]; // stop point at which the vehicle calls
+        OiCallData arrival_data = 3; // information pertaining to the arrival
+        OiCallData departure_data = 4; // information pertaining to the departure
+        google.protobuf.FloatValue dist_to_next_stop = 5; // [m, max. 1 decimal]
+        google.protobuf.BoolValue do_not_dwell = 6; // indication that vehicle must continue even if ahead of time
+        google.protobuf.Int32Value typical_dwell_time = 7; // [s]
+
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    google.protobuf.StringValue journey_id = 2 [(protoc.gen.jsonschema.field_options).required = true]; // VDV452/715 JOURNEY(REC_FRT)::JOURNEY_NO(FRT_FID)
+    repeated OiJourneyCall call = 3; // ordered list of scheduled calls of this journey
+
+}
+
+
+message PtxOiOperationalStatus {
+
+    message OiPublicTransportVehicleSignals {
+        google.protobuf.BoolValue reverse_gear = 1;
+        google.protobuf.BoolValue doors_released = 2;
+        google.protobuf.BoolValue doors_open = 3;
+        google.protobuf.BoolValue stop_brake_active = 4;
+        google.protobuf.BoolValue stop_request_active = 5;
+    }
+
+    message OiGeoLocation {
+        double latitude = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [deg WGS-84, -90..+90, pos. = N, 6 decimals]
+        double longitude = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [deg WGS-84, -180..+180, pos. = E, 6 decimals]
+        google.protobuf.FloatValue accuracy = 3; // [m, non-neg., max. 1 decimals]
+        google.protobuf.FloatValue altitude = 4; // [m, pos. = up, 1 decimal]
+        google.protobuf.FloatValue vertical_accuracy = 5; // [m, non-neg., max. 1 decimal]
+        google.protobuf.FloatValue heading = 6; // [deg 0..360, 0 = true north, 90 = east, max. 1 decimal]
+        google.protobuf.FloatValue speed = 7; // [m/s, max. 2 decimals] speed from GNSS
+    }
+
+    message OiLogicalLocation {
+        google.protobuf.StringValue journey_id = 1 [(protoc.gen.jsonschema.field_options).required = true]; // reference to journey
+        int32 call_seq = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [#, 1-based] prev-or-current-or-next stop
+        google.protobuf.FloatValue distance = 3; // [m, max. 1 decimal] neg. = before stop, pos. = after stop
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxOiEnum.OiDriverCabActivation driver_cab_active = 2 [(protoc.gen.jsonschema.field_options).required = true];
+    OiPublicTransportVehicleSignals public_transport_vehicle_signals = 3;
+    google.protobuf.FloatValue odo_speed = 5; // [m/s]
+    google.protobuf.Int32Value sat_count = 6; // [#]
+    OiGeoLocation geo_loc = 7;
+    PtxOiEnum.OiLocationStatus status = 8 [(protoc.gen.jsonschema.field_options).required = true];
+    OiLogicalLocation logical_loc = 9; // only if logged onto a journey
+    google.protobuf.Int32Value deviation = 10; // [s, pos. = delayed]
+    google.protobuf.FloatValue occupancy = 11; // [%, 0..100, max. 1 decimal]
+    PtxOiEnum.OiPriorityLevel prio_level = 12 [(protoc.gen.jsonschema.field_options).required = true];
+
+}
+

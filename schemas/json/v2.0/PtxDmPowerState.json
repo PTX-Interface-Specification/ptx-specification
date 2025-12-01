@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxDmPowerState",
+    "definitions": {
+        "PtxDmPowerState": {
+            "required": [
+                "msg_header",
+                "power_state"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "power_state": {
+                    "enum": [
+                        "POWER_STATE_UNKNOWN",
+                        "POWER_ACTIVE",
+                        "SWITCH_OFF_PLANNED",
+                        "SWITCH_OFF_IMMINENT"
+                    ],
+                    "type": "string",
+                    "title": "Dm Device Power State Enum"
+                },
+                "ignition_on": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "comm_available": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "bulk_available": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "shutdown_not_before": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Dm Power State"
+        },
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        }
+    }
+}

@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxOiOperationalLogon",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, 3 decimals]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "integer",
+                    "description": "initial version = 1"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxOiOperationalLogon": {
+            "required": [
+                "msg_header",
+                "vehicle_id"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "vehicle_id": {
+                    "type": "string",
+                    "description": "VDV452/443 VEHICLE(FAHRZEUG)::VEHICLE_NO(FZG_NR)"
+                },
+                "driver_id": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "VDV455B DRIVER(PERSONAL)::DRIVER_NR(FAHRER_NR)"
+                },
+                "block_id": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "VDV452/310 BLOCK::BLOCK_NO(UM_UID)"
+                },
+                "journey_id": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "VDV452/715 JOURNEY(REC_FRT)::JOURNEY_NO(FRT_FID)"
+                },
+                "pattern_id": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "VDV452/226 LINE(REC_LID)::ROUTE_NO(ROUTEN_NR)"
+                },
+                "line_id": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "VDV452/226 LINE(REC_LID)::LINE_NO(LI_NR)"
+                },
+                "direction_id": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "VDV452/226 LINE(REC_LID)::DIRECTION(LI_RI_NR)"
+                },
+                "run_id": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "VDV452/715 JOURNEY(REC_FRT)::RUN(LI_KU_NR)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Oi Operational Logon",
+            "description": "IDs refer to VDV452 and VDV455B"
+        }
+    }
+}

@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxDmVersion",
+    "definitions": {
+        "DmModuleVersion": {
+            "required": [
+                "class",
+                "name",
+                "version"
+            ],
+            "properties": {
+                "class": {
+                    "enum": [
+                        "CLASS_UNKNOWN",
+                        "CLASS_HW",
+                        "CLASS_FW",
+                        "CLASS_OS",
+                        "CLASS_SW",
+                        "CLASS_DATA",
+                        "CLASS_CFG"
+                    ],
+                    "type": "string",
+                    "title": "Dm Device Module Class Enum"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Dm Module Version"
+        },
+        "PtxDmVersion": {
+            "required": [
+                "msg_header",
+                "description"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "description": {
+                    "type": "string"
+                },
+                "module": {
+                    "items": {
+                        "$ref": "#/definitions/DmModuleVersion"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Dm Version"
+        },
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, 3 decimals]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "integer",
+                    "description": "initial version = 1"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        }
+    }
+}

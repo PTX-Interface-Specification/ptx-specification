@@ -1,0 +1,121 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxV2xIntersectionStatus",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxV2xIntersectionStatus": {
+            "required": [
+                "msg_header",
+                "path_location",
+                "intersection_id",
+                "signal_group_id",
+                "ingress_lane_id",
+                "egress_lane_id",
+                "priority_status"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "path_location": {
+                    "$ref": "#/definitions/V2xPathLocation",
+                    "additionalProperties": true,
+                    "description": "the point on the path corresponding to the stop line"
+                },
+                "intersection_id": {
+                    "type": "string",
+                    "description": "reference to the intersection (e.g. \"\u003cregion\u003e:\u003cid\u003e\")"
+                },
+                "signal_group_id": {
+                    "type": "integer",
+                    "description": "ID of  movement (cf. MAP/SPAT)"
+                },
+                "ingress_lane_id": {
+                    "type": "integer",
+                    "description": "ID of the recommended ingress lane (cf. MAP/SPAT)"
+                },
+                "egress_lane_id": {
+                    "type": "integer",
+                    "description": "ID of the recommended egress lane (cf. MAP/SPAT)"
+                },
+                "priority_status": {
+                    "enum": [
+                        "STATUS_UNKNOWN",
+                        "STATUS_REQUESTED",
+                        "STATUS_PROCESSING",
+                        "STATUS_TRAFFIC",
+                        "STATUS_GRANTED",
+                        "STATUS_REJECTED",
+                        "STATUS_MAX",
+                        "STATUS_LOCKED",
+                        "STATUS_TIMEOUT"
+                    ],
+                    "type": "string",
+                    "title": "V 2 X Priority Status"
+                },
+                "recommended_departure_from_stop": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2] (if vehicle currently at stop before this intersection)",
+                    "format": "date-time"
+                },
+                "recommended_speed": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m/s, max. 2 decimals] (if no stop between current vehicle location and intersection)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx V 2 X Intersection Status"
+        },
+        "V2xPathLocation": {
+            "required": [
+                "path_id",
+                "segment_seq",
+                "point_seq",
+                "dist"
+            ],
+            "properties": {
+                "path_id": {
+                    "type": "string",
+                    "description": "reference to path"
+                },
+                "segment_seq": {
+                    "type": "integer",
+                    "description": "1-based sequence number of segment within path"
+                },
+                "point_seq": {
+                    "type": "integer",
+                    "description": "1-based sequence number of point within segment"
+                },
+                "dist": {
+                    "type": "number",
+                    "description": "[m] distance driven since the identified path point"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Path Location"
+        }
+    }
+}

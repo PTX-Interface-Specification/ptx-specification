@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxDmPresence",
+    "definitions": {
+        "PtxDmPresence": {
+            "required": [
+                "msg_header",
+                "description",
+                "active"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "description": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Dm Presence"
+        },
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        }
+    }
+}

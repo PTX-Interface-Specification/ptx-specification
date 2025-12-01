@@ -1,0 +1,309 @@
+/**
+ * (C) 2024, Trapeze Switzerland GmbH. All rights reserved.
+ */
+
+syntax = "proto3";
+
+package io.ptx.v2.v2x; // tentative
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+import "chrusty/protoc-gen-jsonschema/options.proto";
+
+option java_multiple_files = true;
+
+import "PTX_Framing_DTO.proto";
+
+
+message PtxV2xEnum {
+
+    enum V2xEncodingRule {
+        ENCODING_UNKNOWN = 0; // for extensibility (can be used to disable mirroring)
+        ENCODING_TEXT = 1; // mirrored messages converted to human-readable text
+        ENCODING_UPER = 2; // the unaligned packed encoding used over-the-air (ASN.1-UPER)
+        ENCODING_JSON = 3; // the canonical JSON text format (ASN.1-JER)
+        ENCODING_XML = 4; // the canonical XML text format (ASN.1-XER)
+        ENCODING_PCAP = 5; // PCAP (e.g. for viewing with Wireshark)
+    }
+
+    enum V2xServiceType {
+        SERVICE_UNKNOWN = 0; // for extensibility (never used)
+        SERVICE_R09_OVER_CAM = 1; // sends R09 payload embedded in CAM
+        SERVICE_R09_OVER_SRM = 2; // sends R09 payload embedded in SRM (and receives SSM)
+        SERVICE_PHASE = 3; // understands path, receives MAP and SPAT
+        SERVICE_PRIORITY = 4; // understands path, receives MAP, sends SRM, receives SSM
+        SERVICE_MAKE_AWARE = 5; // sends CAM
+    }
+
+    enum V2xMessageType {
+        MESSAGE_UNKNOWN = 0; // for extensibility (never used)
+        MESSAGE_CAM = 1; // co-operative awareness
+        MESSAGE_MAP = 2; // intersection map
+        MESSAGE_SPAT = 3; // signal phase and timing
+        MESSAGE_SRM = 4; // signal request
+        MESSAGE_SSM = 5; // signal status
+    }
+
+    enum V2xMovementPhaseState {
+        PHASE_UNAVAILABLE = 0; // SPAT::MovementPhaseState::unavailable (0)
+        PHASE_DARK = 1; // SPAT::MovementPhaseState::dark (1)
+        PHASE_FLASHING_RED = 2; // SPAT::MovementPhaseState::stop-then-proceed (2)
+        PHASE_RED = 3; // SPAT::MovementPhaseState::stop-and-remain (3)
+        PHASE_RED_AND_YELLOW = 4; // SPAT::MovementPhaseState::pre-movement (4)
+        PHASE_GREEN = 5; // SPAT::MovementPhaseState::permissive-movement-allowed (5)
+        PHASE_GREEN_EXCLUSIVE = 6; // SPAT::MovementPhaseState::protected-movement-allowed (6)
+        PHASE_YELLOW = 7; // SPAT::MovementPhaseState::permissive-clearance (7)
+        PHASE_YELLOW_EXCLUSIVE = 8; // SPAT::MovementPhaseState::protected-clearance (8)
+        PHASE_FLASHING_YELLOW = 9; // SPAT::MovementPhaseState::caution-conflicting-traffic (9)
+    }
+
+    enum V2xPriorityStatus {
+        STATUS_UNKNOWN = 0; // SSM::PrioritizationResponseStatus::unknown(0)
+        STATUS_REQUESTED = 1; // SSM::PrioritizationResponseStatus::requested(1)
+        STATUS_PROCESSING = 2; // SSM::PrioritizationResponseStatus::processing(2)
+        STATUS_TRAFFIC = 3; // SSM::PrioritizationResponseStatus::watchOtherTraffic(3)
+        STATUS_GRANTED = 4; // SSM::PrioritizationResponseStatus::granted(4)
+        STATUS_REJECTED = 5; // SSM::PrioritizationResponseStatus::rejected(5)
+        STATUS_MAX = 6; // SSM::PrioritizationResponseStatus::maxPresence(6)
+        STATUS_LOCKED = 7; // SSM::PrioritizationResponseStatus::serviceLocked(7)
+        STATUS_TIMEOUT = 8; // priority request has timed out (no answer)
+    }
+
+}
+
+
+message PtxV2xConfiguration {
+
+    message V2xServiceConfig {
+        PtxV2xEnum.V2xServiceType type = 1 [(protoc.gen.jsonschema.field_options).required = true]; // service to be activated
+        int32 interval = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [s] min. interval (per station) for OBU-to-IBIS messages
+    }
+
+    message V2xMessageConfig {
+        PtxV2xEnum.V2xMessageType type = 1 [(protoc.gen.jsonschema.field_options).required = true]; // mirror messages of this type
+        int32 interval = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [s] min. interval per message of this type
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    repeated V2xServiceConfig service = 2; // services to be activated, can be null or empty
+    repeated V2xMessageConfig incoming_msg = 3; // mirrored incoming messages, can be null or empty
+    repeated V2xMessageConfig outgoing_msg = 4; // mirrored outgoing messages, can be null or empty
+    PtxV2xEnum.V2xEncodingRule selected_rule = 5; // encoding rule for mirroring
+
+}
+
+
+message PtxV2xPathDefinition {
+
+    message V2xPathPoint {
+        int32 seq = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [#, 1-based] point within segment
+        double lat = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [deg WGS-84, -90..+90, pos. = N, 6 decimals]
+        double lon = 3 [(protoc.gen.jsonschema.field_options).required = true]; // [deg WGS-84, -180..+180, pos. = E, 6 decimals]
+        float dist = 4[(protoc.gen.jsonschema.field_options).required = true]; // [m, along whole point sequence, 1st point = 0, max. 2 decimals]
+        float time = 5[(protoc.gen.jsonschema.field_options).required = true]; // [s, along whole point sequence, 1st point = 0, max. 1 decimal]
+        google.protobuf.BoolValue is_lane_precise = 6; // optional flag expressing that the coordinates are lane-precise
+    }
+
+    message V2xStopPoint {
+        string id = 1 [(protoc.gen.jsonschema.field_options).required = true]; // VDV452/253 STOP(REC_ORT)::POINT_NO(ORT_NR)
+        string name = 2[(protoc.gen.jsonschema.field_options).required = true]; // stop short name + "-" + point nr (for debugging purposes)
+        google.protobuf.DoubleValue lat = 3; // [deg WGS-84, -90..+90, pos. = N]
+        google.protobuf.DoubleValue lon = 4; // [deg WGS-84, -180..+180, pos. = E]
+        google.protobuf.FloatValue heading = 5; // [deg 0..360, 0 = true north, 90 = east, -1 = unknown]
+    }
+
+    message V2xPathSegment {
+        int32 seq = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [#, 1-based] segment within path
+        repeated V2xPathPoint path_point = 2; // ordered list of points of the segment
+        V2xStopPoint stop_point = 3; // stop point at the end of the segment where to call
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    string path_id = 2 [(protoc.gen.jsonschema.field_options).required = true]; // id of path
+    repeated V2xPathSegment segment = 3; // ordered list of segments of the path
+
+}
+
+
+message PtxV2xPathLocation {
+
+    message V2xPathLocation {
+        string path_id = 1 [(protoc.gen.jsonschema.field_options).required = true]; // reference to path
+        int32 segment_seq = 2 [(protoc.gen.jsonschema.field_options).required = true]; // 1-based sequence number of segment within path
+        int32 point_seq = 3 [(protoc.gen.jsonschema.field_options).required = true]; // 1-based sequence number of point within segment
+        float dist = 4 [(protoc.gen.jsonschema.field_options).required = true]; // [m] distance driven since the identified path point
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    V2xPathLocation path_loc = 2; // path location (on "before_stop" path section)
+
+}
+
+
+message PtxV2xR09Request {
+
+    message R09Attributes {
+        google.protobuf.Int32Value schedule_deviation = 1; // [seconds; positive = delayed, negative = ahead]
+        google.protobuf.Int32Value message_variant = 2; // [0..6; 0 = R09.10, ..., 6 = R09.16] variant of R09 telegram
+        google.protobuf.Int32Value reporting_point_number = 3; // [0..65535] identification of the reporting point
+        google.protobuf.Int32Value priority_level = 4; // [0..3; 0 = none, 1 = normal, 2 = high, 3 = highest]
+        google.protobuf.Int32Value manual_direction = 5; // [0..3; 0 = none, 1 = straight, 2 = left, 3 = right]
+        google.protobuf.Int32Value line_number = 6; // [0..999] (since extended to 0..9999 in VDV452)
+        google.protobuf.Int32Value run_number = 7; // [0..99] (called "route" in OCIT)
+        google.protobuf.Int32Value destination_number = 8; // [0..999] (called "tour" in OCIT; 0..9999 in VDV452)
+        google.protobuf.Int32Value train_length = 9; // [0..7] number of coupled vehicles (train or tram cars)
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    int32 transaction_id = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [#, 1-based]
+    string payload_hex = 3 [(protoc.gen.jsonschema.field_options).required = true]; // [HEX string]
+    R09Attributes attributes = 4; // all available attributes potentially relevant for the "OCIT container"
+
+}
+
+
+message PtxV2xCapabilities {
+
+    message V2xServiceCapability {
+        PtxV2xEnum.V2xServiceType type = 1 [(protoc.gen.jsonschema.field_options).required = true]; // supported service
+        int32 version = 2 [(protoc.gen.jsonschema.field_options).required = true]; // service version (PTX, currently "1")
+    }
+
+    message V2xMessageCapability {
+        PtxV2xEnum.V2xMessageType type = 1 [(protoc.gen.jsonschema.field_options).required = true]; // supported message type
+        google.protobuf.Int32Value version = 2 [(protoc.gen.jsonschema.field_options).required = true]; // ETSI, currently "2"
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    repeated V2xServiceCapability service = 2; // supported services
+    repeated V2xMessageCapability incoming_msg = 3; // supported incoming message types, can be null or empty
+    repeated V2xMessageCapability outgoing_msg = 4; // supported outgoing message types, can be null or empty
+    repeated PtxV2xEnum.V2xEncodingRule supported_rule = 5; // supported rules, can be null or empty
+
+}
+
+
+message PtxV2xR09Response {
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    int32 transaction_id = 2 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxV2xEnum.V2xPriorityStatus priority_status = 3 [(protoc.gen.jsonschema.field_options).required = true]; // priority request status
+    float distance_to_stop_line = 4 [(protoc.gen.jsonschema.field_options).required = true]; // [m, max. 1 decimal]
+    string intersection_id = 5 [(protoc.gen.jsonschema.field_options).required = true]; // intersection from which SSM was received
+}
+
+
+message PtxV2xIntersectionMap {
+
+    message V2xGeoPoint {
+        double lat = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [deg WGS-84, -90..+90, pos. = N]
+        double lon = 2 [(protoc.gen.jsonschema.field_options).required = true]; // [deg WGS-84, -180..+180, pos. = E]
+    }
+
+    message V2xIntersectionLane {
+
+        message V2xDirectionUse {
+            google.protobuf.BoolValue is_ingress = 1;
+            google.protobuf.BoolValue is_egress = 2;
+        }
+
+        message V2xLaneUse {
+            google.protobuf.BoolValue mixed_traffic = 1;
+            google.protobuf.BoolValue nonmotor_traffic = 2;
+            google.protobuf.BoolValue motor_traffic = 3;
+            google.protobuf.BoolValue bus_traffic = 4;
+            google.protobuf.BoolValue taxi_traffic = 5;
+            google.protobuf.BoolValue pedestrian_traffic = 6;
+            google.protobuf.BoolValue cyclist_traffic = 7;
+            google.protobuf.BoolValue rail_traffic = 8;
+            google.protobuf.BoolValue other_traffic = 9;
+        }
+
+        message V2xLaneConnection {
+            message V2xAllowedManoeuvres {
+                google.protobuf.BoolValue straight_allowed = 1; // straight movement allowed
+                google.protobuf.BoolValue left_allowed = 2; // left turn allowed
+                google.protobuf.BoolValue right_allowed = 3; // right turn allowed
+                google.protobuf.BoolValue u_turn_allowed = 4; // u-turn allowed
+                google.protobuf.BoolValue left_on_red_allowed = 5; // stop, then proceed left
+                google.protobuf.BoolValue right_on_red_allowed = 6; // stop, then proceed right
+                google.protobuf.BoolValue lane_change_allowed = 7; // lane change within the conflict zone
+                google.protobuf.BoolValue no_stopping_allowed = 8; // should not stop at stop line
+                google.protobuf.BoolValue yield_always_required = 9; // allowed movements are not protected
+                google.protobuf.BoolValue go_with_halt = 10; // stop fully, then proceed
+                google.protobuf.BoolValue caution = 11; // proceed with caution (conflicting traffic)
+            }
+            int32 signal_group_id = 1 [(protoc.gen.jsonschema.field_options).required = true]; // ID of  movement (unique within intersection)
+            int32 lane_id = 2 [(protoc.gen.jsonschema.field_options).required = true]; // ID of the connected lane (MUST be in same intersect.)
+            V2xAllowedManoeuvres manoeuvres = 3; // flags for allowed manoeuvres, can be null or empty
+        }
+
+        int32 lane_id = 1 [(protoc.gen.jsonschema.field_options).required = true]; // ID of the lane within the intersection
+        int32 approach_nr = 2 [(protoc.gen.jsonschema.field_options).required = true]; // approach of the intersect. to which this lane belongs
+        int32 lane_nr = 3 [(protoc.gen.jsonschema.field_options).required = true]; // number of lane within approach (from center to side)
+        string name = 4 [(protoc.gen.jsonschema.field_options).required = true]; // for debugging only
+        repeated V2xGeoPoint lane_point = 5 [(protoc.gen.jsonschema.field_options).required = true]; // from stop line outwards, should be non-empty
+        V2xDirectionUse direction_use = 6 [(protoc.gen.jsonschema.field_options).required = true]; // ingress and/or egress
+        V2xLaneUse lane_use = 7 [(protoc.gen.jsonschema.field_options).required = true]; // individual, buses, taxis, cyclists, pedestrians, ?
+        repeated V2xLaneConnection connection = 8; // all egress lanes for this ingress, can be null or empty
+
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    string intersection_id = 2 [(protoc.gen.jsonschema.field_options).required = true]; // ID of the intersection (e.g. "<region>:<id>")
+    string name = 3 [(protoc.gen.jsonschema.field_options).required = true]; // for debugging only
+    int32 revision = 4 [(protoc.gen.jsonschema.field_options).required = true]; // for debugging only
+    V2xGeoPoint reference_point = 5 [(protoc.gen.jsonschema.field_options).required = true]; // the reference point of the intersection
+    repeated V2xIntersectionLane lane = 6; // set of lanes (only lanes for vehicles), should be non-empty
+
+}
+
+
+message PtxV2xIntersectionPhase {
+
+    message V2xMovementState {
+
+        message V2xMovementEvent {
+
+            message V2xTimeChangeDetails {
+                google.protobuf.Timestamp start_time = 1 [(protoc.gen.jsonschema.field_options).required = true]; // [RFC 3339, cf. §5.2]
+                google.protobuf.Timestamp earliest_end_time = 2; // [RFC 3339, cf. §5.2]
+                google.protobuf.Timestamp likely_end_time = 3; // [RFC 3339, cf. §5.2]
+                google.protobuf.Timestamp latest_end_time = 4; // [RFC 3339, cf. §5.2]
+                google.protobuf.Int32Value confidence = 5; // [0%..100%] confidence for likely end time
+                google.protobuf.Timestamp next_time = 6; // [RFC 3339, cf. §5.2]
+            }
+
+            PtxV2xEnum.V2xMovementPhaseState event_state = 1 [(protoc.gen.jsonschema.field_options).required = true];
+            V2xTimeChangeDetails timing = 2 [(protoc.gen.jsonschema.field_options).required = true];
+
+        }
+
+        int32 signal_group_id = 1 [(protoc.gen.jsonschema.field_options).required = true]; // ID of the signal group within the intersection
+        string name = 2 [(protoc.gen.jsonschema.field_options).required = true]; // for debugging only
+        repeated V2xMovementEvent state_time_speed = 3; // should contain current and next
+
+    }
+
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    string intersection_id = 2 [(protoc.gen.jsonschema.field_options).required = true]; // ID of the intersection (e.g. "<region>:<id>")
+    string name = 3 [(protoc.gen.jsonschema.field_options).required = true]; // for debugging only
+    int32 revision = 4 [(protoc.gen.jsonschema.field_options).required = true]; // for debugging only
+    repeated int32 enabled_lane_id = 5; // should not be empty
+    repeated V2xMovementState state = 6; // only allowed movements as per vehicle type
+
+}
+
+
+message PtxV2xIntersectionStatus {
+    io.ptx.v2.PtxHeader msg_header = 1 [(protoc.gen.jsonschema.field_options).required = true];
+    PtxV2xPathLocation.V2xPathLocation path_location = 2 [(protoc.gen.jsonschema.field_options).required = true]; // the point on the path corresponding to the stop line
+    string intersection_id = 3 [(protoc.gen.jsonschema.field_options).required = true]; // reference to the intersection (e.g. "<region>:<id>")
+    int32 signal_group_id = 4 [(protoc.gen.jsonschema.field_options).required = true]; // ID of  movement (cf. MAP/SPAT)
+    int32 ingress_lane_id = 5 [(protoc.gen.jsonschema.field_options).required = true]; // ID of the recommended ingress lane (cf. MAP/SPAT)
+    int32 egress_lane_id = 6 [(protoc.gen.jsonschema.field_options).required = true]; // ID of the recommended egress lane (cf. MAP/SPAT)
+    PtxV2xEnum.V2xPriorityStatus priority_status = 7 [(protoc.gen.jsonschema.field_options).required = true]; // priority request status (cf. SRM/SSM)
+    google.protobuf.Timestamp recommended_departure_from_stop = 8; // [RFC 3339, cf. §5.2] (if vehicle currently at stop before this intersection)
+    google.protobuf.FloatValue recommended_speed = 9; // [m/s, max. 2 decimals] (if no stop between current vehicle location and intersection)
+}
+

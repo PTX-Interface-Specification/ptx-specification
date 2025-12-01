@@ -1,0 +1,118 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxDmHealth",
+    "definitions": {
+        "DmResourceUsage": {
+            "required": [
+                "cpu",
+                "ram",
+                "disk"
+            ],
+            "properties": {
+                "cpu": {
+                    "type": "number",
+                    "description": "[0%..100%, max. 1 decimal] overall CPU load (running average)"
+                },
+                "ram": {
+                    "type": "number",
+                    "description": "[0%..100%, max. 1 decimal] usage of the RAM"
+                },
+                "disk": {
+                    "type": "number",
+                    "description": "[0%..100%, max. 1 decimal] usage of the (exactly 1) monitored partition"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Dm Resource Usage"
+        },
+        "PtxDmHealth": {
+            "required": [
+                "msg_header",
+                "description",
+                "reachability",
+                "activation",
+                "health",
+                "uptime"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "description": {
+                    "type": "string"
+                },
+                "reachability": {
+                    "enum": [
+                        "REACHABLE_UNKNOWN",
+                        "REACHABLE_DIRECT",
+                        "REACHABLE_YES",
+                        "REACHABLE_NO"
+                    ],
+                    "type": "string",
+                    "title": "Dm Device Reachability Enum",
+                    "description": "tells whether or not status data is available at all"
+                },
+                "activation": {
+                    "enum": [
+                        "STATUS_UNKNOWN",
+                        "STATUS_ACTIVE",
+                        "STATUS_INACTIVE"
+                    ],
+                    "type": "string",
+                    "title": "Dm Device Activation Enum",
+                    "description": "tells whether or not status reporting makes sense"
+                },
+                "health": {
+                    "enum": [
+                        "HEALTH_UNKNOWN",
+                        "HEALTH_OK",
+                        "HEALTH_INFO",
+                        "HEALTH_YELLOW",
+                        "HEALTH_RED"
+                    ],
+                    "type": "string",
+                    "title": "Dm Device Health Enum",
+                    "description": "general health status"
+                },
+                "reason": {
+                    "additionalProperties": true,
+                    "type": "string"
+                },
+                "usage": {
+                    "$ref": "#/definitions/DmResourceUsage",
+                    "additionalProperties": true
+                },
+                "uptime": {
+                    "type": "integer",
+                    "description": "[s] time since last boot"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Dm Health",
+            "description": "* This message is used in a variety of contexts: - an on-board computer reports its own health - an on-board computer reports the health of a connected device (OBC acts as a proxy) - an on-board device reports its own health - an on-board device reports the health of a connected device (the first device acts as a proxy) The most important attributes are: - description: The description (of the device for which the health is reported) allows   the device to be identified and found on-board or at the stop - health: Based on this attribute, the remote monitoring personnel will be alarmed - reason: Whenever the health is not \"OK\", the reason must be provided in a plain English   sentence that is targeted to humans. If there are multiple reasons, then the reasons shall   be concatenated. It is not sufficient to show the CPU load. If the CPU load is deemed unhealthy, the \"health\" attribute must reflect this situation."
+        },
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        }
+    }
+}

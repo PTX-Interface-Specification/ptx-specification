@@ -1,0 +1,198 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxOiOperationalStatus",
+    "definitions": {
+        "OiGeoLocation": {
+            "required": [
+                "latitude",
+                "longitude"
+            ],
+            "properties": {
+                "latitude": {
+                    "type": "number",
+                    "description": "[deg WGS-84, -90..+90, pos. = N, 6 decimals]"
+                },
+                "longitude": {
+                    "type": "number",
+                    "description": "[deg WGS-84, -180..+180, pos. = E, 6 decimals]"
+                },
+                "accuracy": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, non-neg., max. 1 decimals]"
+                },
+                "altitude": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, pos. = up, 1 decimal]"
+                },
+                "vertical_accuracy": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, non-neg., max. 1 decimal]"
+                },
+                "heading": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[deg 0..360, 0 = true north, 90 = east, max. 1 decimal]"
+                },
+                "speed": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m/s, max. 2 decimals] speed from GNSS"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Oi Geo Location"
+        },
+        "OiLogicalLocation": {
+            "required": [
+                "journey_id",
+                "call_seq"
+            ],
+            "properties": {
+                "journey_id": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "reference to journey"
+                },
+                "call_seq": {
+                    "type": "integer",
+                    "description": "[#, 1-based] prev-or-current-or-next stop"
+                },
+                "distance": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, max. 1 decimal] neg. = before stop, pos. = after stop"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Oi Logical Location"
+        },
+        "OiVehicleSignals": {
+            "properties": {
+                "reverse_gear": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "doors_released": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "doors_open": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "stop_brake_active": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Oi Vehicle Signals"
+        },
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, 3 decimals]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "integer",
+                    "description": "initial version = 1"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxOiOperationalStatus": {
+            "required": [
+                "msg_header",
+                "driver_cab_active",
+                "status",
+                "prio_level"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "driver_cab_active": {
+                    "enum": [
+                        "CAB_UNKNOWN",
+                        "CAB_NONE",
+                        "CAB_A",
+                        "CAB_B"
+                    ],
+                    "type": "string",
+                    "title": "Oi Driver Cab Activation"
+                },
+                "vehicle_signals": {
+                    "$ref": "#/definitions/OiVehicleSignals",
+                    "additionalProperties": true
+                },
+                "odo_speed": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m/s]"
+                },
+                "sat_count": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[#]"
+                },
+                "geo_loc": {
+                    "$ref": "#/definitions/OiGeoLocation",
+                    "additionalProperties": true
+                },
+                "status": {
+                    "enum": [
+                        "LOC_UNKNOWN",
+                        "LOC_NONE",
+                        "LOC_OFF_COURSE",
+                        "LOC_ON_COURSE"
+                    ],
+                    "type": "string",
+                    "title": "Oi Location Status"
+                },
+                "logical_loc": {
+                    "$ref": "#/definitions/OiLogicalLocation",
+                    "additionalProperties": true,
+                    "description": "only if logged onto a journey"
+                },
+                "deviation": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[s, pos. = delayed]"
+                },
+                "occupancy": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[%, 0..100, max. 1 decimal]"
+                },
+                "prio_level": {
+                    "enum": [
+                        "PRIO_UNKNOWN",
+                        "PRIO_NORMAL",
+                        "PRIO_OFF_AT_STOP",
+                        "PRIO_OFF"
+                    ],
+                    "type": "string",
+                    "title": "Oi Priority Level"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Oi Operational Status"
+        }
+    }
+}

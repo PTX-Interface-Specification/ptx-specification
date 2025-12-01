@@ -1,0 +1,287 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxV2xIntersectionMap",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxV2xIntersectionMap": {
+            "required": [
+                "msg_header",
+                "intersection_id",
+                "name",
+                "revision",
+                "reference_point"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "intersection_id": {
+                    "type": "string",
+                    "description": "ID of the intersection (e.g. \"\u003cregion\u003e:\u003cid\u003e\")"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "for debugging only"
+                },
+                "revision": {
+                    "type": "integer",
+                    "description": "for debugging only"
+                },
+                "reference_point": {
+                    "$ref": "#/definitions/V2xGeoPoint",
+                    "additionalProperties": true,
+                    "description": "the reference point of the intersection"
+                },
+                "lane": {
+                    "items": {
+                        "$ref": "#/definitions/V2xIntersectionLane"
+                    },
+                    "type": "array",
+                    "description": "set of lanes (only lanes for vehicles), should be non-empty"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx V 2 X Intersection Map"
+        },
+        "V2xAllowedManoeuvres": {
+            "properties": {
+                "straight_allowed": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "straight movement allowed"
+                },
+                "left_allowed": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "left turn allowed"
+                },
+                "right_allowed": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "right turn allowed"
+                },
+                "u_turn_allowed": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "u-turn allowed"
+                },
+                "left_on_red_allowed": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "stop, then proceed left"
+                },
+                "right_on_red_allowed": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "stop, then proceed right"
+                },
+                "lane_change_allowed": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "lane change within the conflict zone"
+                },
+                "no_stopping_allowed": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "should not stop at stop line"
+                },
+                "yield_always_required": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "allowed movements are not protected"
+                },
+                "go_with_halt": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "stop fully, then proceed"
+                },
+                "caution": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "proceed with caution (conflicting traffic)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Allowed Manoeuvres"
+        },
+        "V2xDirectionUse": {
+            "properties": {
+                "is_ingress": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "is_egress": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Direction Use"
+        },
+        "V2xGeoPoint": {
+            "required": [
+                "lat",
+                "lon"
+            ],
+            "properties": {
+                "lat": {
+                    "type": "number",
+                    "description": "[deg WGS-84, -90..+90, pos. = N]"
+                },
+                "lon": {
+                    "type": "number",
+                    "description": "[deg WGS-84, -180..+180, pos. = E]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Geo Point"
+        },
+        "V2xIntersectionLane": {
+            "required": [
+                "lane_id",
+                "approach_nr",
+                "lane_nr",
+                "name",
+                "lane_point",
+                "direction_use",
+                "lane_use"
+            ],
+            "properties": {
+                "lane_id": {
+                    "type": "integer",
+                    "description": "ID of the lane within the intersection"
+                },
+                "approach_nr": {
+                    "type": "integer",
+                    "description": "approach of the intersect. to which this lane belongs"
+                },
+                "lane_nr": {
+                    "type": "integer",
+                    "description": "number of lane within approach (from center to side)"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "for debugging only"
+                },
+                "lane_point": {
+                    "items": {
+                        "$ref": "#/definitions/V2xGeoPoint"
+                    },
+                    "type": "array",
+                    "description": "from stop line outwards, should be non-empty"
+                },
+                "direction_use": {
+                    "$ref": "#/definitions/V2xDirectionUse",
+                    "additionalProperties": true,
+                    "description": "ingress and/or egress"
+                },
+                "lane_use": {
+                    "$ref": "#/definitions/V2xLaneUse",
+                    "additionalProperties": true,
+                    "description": "individual, buses, taxis, cyclists, pedestrians, ?"
+                },
+                "connection": {
+                    "items": {
+                        "$ref": "#/definitions/V2xLaneConnection"
+                    },
+                    "type": "array",
+                    "description": "all egress lanes for this ingress, can be null or empty"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Intersection Lane"
+        },
+        "V2xLaneConnection": {
+            "required": [
+                "signal_group_id",
+                "lane_id"
+            ],
+            "properties": {
+                "signal_group_id": {
+                    "type": "integer",
+                    "description": "ID of  movement (unique within intersection)"
+                },
+                "lane_id": {
+                    "type": "integer",
+                    "description": "ID of the connected lane (MUST be in same intersect.)"
+                },
+                "manoeuvres": {
+                    "$ref": "#/definitions/V2xAllowedManoeuvres",
+                    "additionalProperties": true,
+                    "description": "flags for allowed manoeuvres, can be null or empty"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Lane Connection"
+        },
+        "V2xLaneUse": {
+            "properties": {
+                "mixed_traffic": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "nonmotor_traffic": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "motor_traffic": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "bus_traffic": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "taxi_traffic": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "pedestrian_traffic": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "cyclist_traffic": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "rail_traffic": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "other_traffic": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Lane Use"
+        }
+    }
+}

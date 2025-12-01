@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxDmTrigger",
+    "definitions": {
+        "PtxDmTrigger": {
+            "required": [
+                "msg_header",
+                "cmd"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "cmd": {
+                    "enum": [
+                        "TRIGGER_UNKNOWN",
+                        "TRIGGER_REBOOT",
+                        "TRIGGER_PUBLISH"
+                    ],
+                    "type": "string",
+                    "title": "Dm Device Trigger Enum",
+                    "description": "triggers the device to do something"
+                },
+                "args": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Dm Trigger"
+        },
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        }
+    }
+}

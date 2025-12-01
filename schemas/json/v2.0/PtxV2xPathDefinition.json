@@ -1,0 +1,151 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxV2xPathDefinition",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxV2xPathDefinition": {
+            "required": [
+                "msg_header",
+                "path_id"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "path_id": {
+                    "type": "string",
+                    "description": "id of path"
+                },
+                "segment": {
+                    "items": {
+                        "$ref": "#/definitions/V2xPathSegment"
+                    },
+                    "type": "array",
+                    "description": "ordered list of segments of the path"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx V 2 X Path Definition"
+        },
+        "V2xPathPoint": {
+            "required": [
+                "seq",
+                "lat",
+                "lon",
+                "dist",
+                "time"
+            ],
+            "properties": {
+                "seq": {
+                    "type": "integer",
+                    "description": "[#, 1-based] point within segment"
+                },
+                "lat": {
+                    "type": "number",
+                    "description": "[deg WGS-84, -90..+90, pos. = N, 6 decimals]"
+                },
+                "lon": {
+                    "type": "number",
+                    "description": "[deg WGS-84, -180..+180, pos. = E, 6 decimals]"
+                },
+                "dist": {
+                    "type": "number",
+                    "description": "[m, along whole point sequence, 1st point = 0, max. 2 decimals]"
+                },
+                "time": {
+                    "type": "number",
+                    "description": "[s, along whole point sequence, 1st point = 0, max. 1 decimal]"
+                },
+                "is_lane_precise": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "optional flag expressing that the coordinates are lane-precise"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Path Point"
+        },
+        "V2xPathSegment": {
+            "required": [
+                "seq"
+            ],
+            "properties": {
+                "seq": {
+                    "type": "integer",
+                    "description": "[#, 1-based] segment within path"
+                },
+                "path_point": {
+                    "items": {
+                        "$ref": "#/definitions/V2xPathPoint"
+                    },
+                    "type": "array",
+                    "description": "ordered list of points of the segment"
+                },
+                "stop_point": {
+                    "$ref": "#/definitions/V2xStopPoint",
+                    "additionalProperties": true,
+                    "description": "stop point at the end of the segment where to call"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Path Segment"
+        },
+        "V2xStopPoint": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "VDV452/253 STOP(REC_ORT)::POINT_NO(ORT_NR)"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "stop short name + \"-\" + point nr (for debugging purposes)"
+                },
+                "lat": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[deg WGS-84, -90..+90, pos. = N]"
+                },
+                "lon": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[deg WGS-84, -180..+180, pos. = E]"
+                },
+                "heading": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[deg 0..360, 0 = true north, 90 = east, -1 = unknown]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Stop Point"
+        }
+    }
+}

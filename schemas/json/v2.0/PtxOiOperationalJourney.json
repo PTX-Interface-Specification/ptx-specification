@@ -1,0 +1,148 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxOiOperationalJourney",
+    "definitions": {
+        "OiCallData": {
+            "required": [
+                "timestamp"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Oi Call Data"
+        },
+        "OiJourneyCall": {
+            "required": [
+                "call_seq",
+                "stop_point"
+            ],
+            "properties": {
+                "call_seq": {
+                    "type": "integer",
+                    "description": "[#, 1-based]"
+                },
+                "stop_point": {
+                    "$ref": "#/definitions/OiStopPoint",
+                    "additionalProperties": true,
+                    "description": "stop point at which the vehicle calls"
+                },
+                "arrival_data": {
+                    "$ref": "#/definitions/OiCallData",
+                    "additionalProperties": true,
+                    "description": "information pertaining to the arrival"
+                },
+                "departure_data": {
+                    "$ref": "#/definitions/OiCallData",
+                    "additionalProperties": true,
+                    "description": "information pertaining to the departure"
+                },
+                "dist_to_next_stop": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, max. 1 decimal]"
+                },
+                "do_not_dwell": {
+                    "additionalProperties": true,
+                    "type": "boolean",
+                    "description": "indication that vehicle must continue even if ahead of time"
+                },
+                "typical_dwell_time": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[s]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Oi Journey Call"
+        },
+        "OiStopPoint": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "if planned stop point: VDV452/253 STOP(REC_ORT)::POINT_NO(ORT_NR)"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "stop short name + \"-\" + point nr (for debugging purposes)"
+                },
+                "lat": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[deg WGS-84, -90..+90, pos. = N] mandatory if available"
+                },
+                "lon": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[deg WGS-84, -180..+180, pos. = E] mandatory if available"
+                },
+                "heading": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[deg 0..360, 0 = true north, 90 = east] mandatory if available"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Oi Stop Point"
+        },
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxOiOperationalJourney": {
+            "required": [
+                "msg_header",
+                "journey_id"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "journey_id": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "VDV452/715 JOURNEY(REC_FRT)::JOURNEY_NO(FRT_FID)"
+                },
+                "call": {
+                    "items": {
+                        "$ref": "#/definitions/OiJourneyCall"
+                    },
+                    "type": "array",
+                    "description": "ordered list of scheduled calls of this journey"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Oi Operational Journey",
+            "description": "IDs refer to VDV452"
+        }
+    }
+}

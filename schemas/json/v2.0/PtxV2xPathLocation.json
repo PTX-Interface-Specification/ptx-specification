@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxV2xPathLocation",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxV2xPathLocation": {
+            "required": [
+                "msg_header"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "path_loc": {
+                    "$ref": "#/definitions/V2xPathLocation",
+                    "additionalProperties": true,
+                    "description": "path location (on \"before_stop\" path section)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx V 2 X Path Location"
+        },
+        "V2xPathLocation": {
+            "required": [
+                "path_id",
+                "segment_seq",
+                "point_seq",
+                "dist"
+            ],
+            "properties": {
+                "path_id": {
+                    "type": "string",
+                    "description": "reference to path"
+                },
+                "segment_seq": {
+                    "type": "integer",
+                    "description": "1-based sequence number of segment within path"
+                },
+                "point_seq": {
+                    "type": "integer",
+                    "description": "1-based sequence number of point within segment"
+                },
+                "dist": {
+                    "type": "number",
+                    "description": "[m] distance driven since the identified path point"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Path Location"
+        }
+    }
+}

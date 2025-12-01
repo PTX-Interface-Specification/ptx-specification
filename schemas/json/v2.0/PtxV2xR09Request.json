@@ -1,0 +1,107 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxV2xR09Request",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxV2xR09Request": {
+            "required": [
+                "msg_header",
+                "transaction_id",
+                "payload_hex"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "transaction_id": {
+                    "type": "integer",
+                    "description": "[#, 1-based]"
+                },
+                "payload_hex": {
+                    "type": "string",
+                    "description": "[HEX string]"
+                },
+                "attributes": {
+                    "$ref": "#/definitions/R09Attributes",
+                    "additionalProperties": true,
+                    "description": "all available attributes potentially relevant for the \"OCIT container\""
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx V 2 XR 09 Request"
+        },
+        "R09Attributes": {
+            "properties": {
+                "schedule_deviation": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[seconds; positive = delayed, negative = ahead]"
+                },
+                "message_variant": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[0..6; 0 = R09.10, ..., 6 = R09.16] variant of R09 telegram"
+                },
+                "reporting_point_number": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[0..65535] identification of the reporting point"
+                },
+                "priority_level": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[0..3; 0 = none, 1 = normal, 2 = high, 3 = highest]"
+                },
+                "manual_direction": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[0..3; 0 = none, 1 = straight, 2 = left, 3 = right]"
+                },
+                "line_number": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[0..999] (since extended to 0..9999 in VDV452)"
+                },
+                "run_number": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[0..99] (called \"route\" in OCIT)"
+                },
+                "destination_number": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[0..999] (called \"tour\" in OCIT; 0..9999 in VDV452)"
+                },
+                "train_length": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[0..7] number of coupled vehicles (train or tram cars)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "R 09 Attributes"
+        }
+    }
+}

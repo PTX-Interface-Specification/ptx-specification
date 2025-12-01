@@ -1,0 +1,127 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxV2xConfiguration",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, 3 decimals]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "integer",
+                    "description": "initial version = 1"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxV2xConfiguration": {
+            "required": [
+                "msg_header"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "service": {
+                    "items": {
+                        "$ref": "#/definitions/V2xServiceConfig"
+                    },
+                    "type": "array",
+                    "description": "services to be activated, can be null or empty"
+                },
+                "incoming_msg": {
+                    "items": {
+                        "$ref": "#/definitions/V2xMessageConfig"
+                    },
+                    "type": "array",
+                    "description": "mirrored incoming messages, can be null or empty"
+                },
+                "outgoing_msg": {
+                    "items": {
+                        "$ref": "#/definitions/V2xMessageConfig"
+                    },
+                    "type": "array",
+                    "description": "mirrored outgoing messages, can be null or empty"
+                },
+                "selected_rule": {
+                    "enum": [
+                        "ENCODING_UNKNOWN",
+                        "ENCODING_TEXT",
+                        "ENCODING_UPER",
+                        "ENCODING_JSON",
+                        "ENCODING_XML",
+                        "ENCODING_PCAP"
+                    ],
+                    "type": "string",
+                    "title": "V 2 X Encoding Rule"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx V 2 X Configuration"
+        },
+        "V2xMessageConfig": {
+            "required": [
+                "type",
+                "interval"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "MESSAGE_UNKNOWN",
+                        "MESSAGE_CAM",
+                        "MESSAGE_MAP",
+                        "MESSAGE_SPAT",
+                        "MESSAGE_SRM",
+                        "MESSAGE_SSM"
+                    ],
+                    "type": "string",
+                    "title": "V 2 X Message Type"
+                },
+                "interval": {
+                    "type": "integer",
+                    "description": "[s] min. interval per message of this type"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Message Config"
+        },
+        "V2xServiceConfig": {
+            "required": [
+                "type",
+                "interval"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "SERVICE_UNKNOWN",
+                        "SERVICE_R09_REQUEST_ONLY",
+                        "SERVICE_R09_REQUEST_RESPONSE",
+                        "SERVICE_PHASE",
+                        "SERVICE_PRIORITY",
+                        "SERVICE_MAKE_AWARE"
+                    ],
+                    "type": "string",
+                    "title": "V 2 X Service Type"
+                },
+                "interval": {
+                    "type": "integer",
+                    "description": "[s] min. interval (per station) for OBU-to-IBIS messages"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Service Config"
+        }
+    }
+}

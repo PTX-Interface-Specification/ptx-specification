@@ -1,0 +1,130 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxV2xCapabilities",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, cf. §5.2]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "current version = 2.0.0"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxV2xCapabilities": {
+            "required": [
+                "msg_header"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "service": {
+                    "items": {
+                        "$ref": "#/definitions/V2xServiceCapability"
+                    },
+                    "type": "array",
+                    "description": "supported services"
+                },
+                "incoming_msg": {
+                    "items": {
+                        "$ref": "#/definitions/V2xMessageCapability"
+                    },
+                    "type": "array",
+                    "description": "supported incoming message types, can be null or empty"
+                },
+                "outgoing_msg": {
+                    "items": {
+                        "$ref": "#/definitions/V2xMessageCapability"
+                    },
+                    "type": "array",
+                    "description": "supported outgoing message types, can be null or empty"
+                },
+                "supported_rule": {
+                    "items": {
+                        "enum": [
+                            "ENCODING_UNKNOWN",
+                            "ENCODING_TEXT",
+                            "ENCODING_UPER",
+                            "ENCODING_JSON",
+                            "ENCODING_XML",
+                            "ENCODING_PCAP"
+                        ]
+                    },
+                    "type": "array",
+                    "title": "V 2 X Encoding Rule"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx V 2 X Capabilities"
+        },
+        "V2xMessageCapability": {
+            "required": [
+                "type",
+                "version"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "MESSAGE_UNKNOWN",
+                        "MESSAGE_CAM",
+                        "MESSAGE_MAP",
+                        "MESSAGE_SPAT",
+                        "MESSAGE_SRM",
+                        "MESSAGE_SSM"
+                    ],
+                    "type": "string",
+                    "title": "V 2 X Message Type"
+                },
+                "version": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "ETSI, currently \"2\""
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Message Capability"
+        },
+        "V2xServiceCapability": {
+            "required": [
+                "type",
+                "version"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "SERVICE_UNKNOWN",
+                        "SERVICE_R09_OVER_CAM",
+                        "SERVICE_R09_OVER_SRM",
+                        "SERVICE_PHASE",
+                        "SERVICE_PRIORITY",
+                        "SERVICE_MAKE_AWARE"
+                    ],
+                    "type": "string",
+                    "title": "V 2 X Service Type"
+                },
+                "version": {
+                    "type": "integer",
+                    "description": "service version (PTX, currently \"1\")"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Service Capability"
+        }
+    }
+}

@@ -1,0 +1,94 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxGeoLocation",
+    "definitions": {
+        "GeoLocation": {
+            "required": [
+                "latitude",
+                "longitude"
+            ],
+            "properties": {
+                "latitude": {
+                    "type": "number",
+                    "description": "[deg WGS-84, -90..+90, pos. = N, 6 decimals]"
+                },
+                "longitude": {
+                    "type": "number",
+                    "description": "[deg WGS-84, -180..+180, pos. = E, 6 decimals]"
+                },
+                "accuracy": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, non-neg., max. 1 decimals]"
+                },
+                "altitude": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, pos. = up, 1 decimal]"
+                },
+                "vertical_accuracy": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, non-neg., max. 1 decimal]"
+                },
+                "heading": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[deg 0..360, 0 = true north, 90 = east, max. 1 decimal]"
+                },
+                "speed": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m/s, max. 2 decimals] speed from GNSS"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Geo Location"
+        },
+        "PtxGeoLocation": {
+            "required": [
+                "msg_header",
+                "geo_loc"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "geo_loc": {
+                    "$ref": "#/definitions/GeoLocation",
+                    "additionalProperties": true,
+                    "description": "GNSS-based"
+                },
+                "sat_count": {
+                    "additionalProperties": true,
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Geo Location"
+        },
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, 3 decimals]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "integer",
+                    "description": "initial version = 1"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        }
+    }
+}

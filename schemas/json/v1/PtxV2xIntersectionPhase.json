@@ -1,0 +1,166 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxV2xIntersectionPhase",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, 3 decimals]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "integer",
+                    "description": "initial version = 1"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxV2xIntersectionPhase": {
+            "required": [
+                "msg_header",
+                "intersection_id",
+                "name",
+                "revision"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "intersection_id": {
+                    "type": "string",
+                    "description": "ID of the intersection (e.g. \"\u003cregion\u003e:\u003cid\u003e\")"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "for debugging only"
+                },
+                "revision": {
+                    "type": "integer",
+                    "description": "for debugging only"
+                },
+                "enabled_lane_id": {
+                    "items": {
+                        "type": "integer"
+                    },
+                    "type": "array",
+                    "description": "should not be empty"
+                },
+                "state": {
+                    "items": {
+                        "$ref": "#/definitions/V2xMovementState"
+                    },
+                    "type": "array",
+                    "description": "only allowed movements as per vehicle type"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx V 2 X Intersection Phase"
+        },
+        "V2xMovementEvent": {
+            "required": [
+                "event_state",
+                "timing"
+            ],
+            "properties": {
+                "event_state": {
+                    "enum": [
+                        "PHASE_UNAVAILABLE",
+                        "PHASE_DARK",
+                        "PHASE_FLASHING_RED",
+                        "PHASE_RED",
+                        "PHASE_RED_AND_YELLOW",
+                        "PHASE_GREEN",
+                        "PHASE_GREEN_EXCLUSIVE",
+                        "PHASE_YELLOW",
+                        "PHASE_YELLOW_EXCLUSIVE",
+                        "PHASE_FLASHING_YELLOW"
+                    ],
+                    "type": "string",
+                    "title": "V 2 X Movement Phase State"
+                },
+                "timing": {
+                    "$ref": "#/definitions/V2xTimeChangeDetails",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Movement Event"
+        },
+        "V2xMovementState": {
+            "required": [
+                "signal_group_id",
+                "name"
+            ],
+            "properties": {
+                "signal_group_id": {
+                    "type": "integer",
+                    "description": "ID of the signal group within the intersection"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "for debugging only"
+                },
+                "state_time_speed": {
+                    "items": {
+                        "$ref": "#/definitions/V2xMovementEvent"
+                    },
+                    "type": "array",
+                    "description": "should contain current and next"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Movement State"
+        },
+        "V2xTimeChangeDetails": {
+            "required": [
+                "start_time"
+            ],
+            "properties": {
+                "start_time": {
+                    "type": "string",
+                    "description": "[RFC 3339, no decimals]",
+                    "format": "date-time"
+                },
+                "earliest_end_time": {
+                    "type": "string",
+                    "description": "[RFC 3339, no decimals]",
+                    "format": "date-time"
+                },
+                "likely_end_time": {
+                    "type": "string",
+                    "description": "[RFC 3339, no decimals]",
+                    "format": "date-time"
+                },
+                "latest_end_time": {
+                    "type": "string",
+                    "description": "[RFC 3339, no decimals]",
+                    "format": "date-time"
+                },
+                "confidence": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[0%..100%] confidence for likely end time"
+                },
+                "next_time": {
+                    "type": "string",
+                    "description": "[RFC 3339, no decimals]",
+                    "format": "date-time"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "V 2 X Time Change Details"
+        }
+    }
+}

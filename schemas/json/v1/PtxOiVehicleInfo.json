@@ -1,0 +1,104 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PtxOiVehicleInfo",
+    "definitions": {
+        "PtxHeader": {
+            "required": [
+                "timestamp",
+                "version"
+            ],
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "description": "[RFC 3339, 3 decimals]",
+                    "format": "date-time"
+                },
+                "version": {
+                    "type": "integer",
+                    "description": "initial version = 1"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Header"
+        },
+        "PtxOiVehicleInfo": {
+            "required": [
+                "msg_header",
+                "category"
+            ],
+            "properties": {
+                "msg_header": {
+                    "$ref": "#/definitions/PtxHeader",
+                    "additionalProperties": true
+                },
+                "category": {
+                    "enum": [
+                        "CAT_OTHER",
+                        "CAT_BUS",
+                        "CAT_TROLLEY",
+                        "CAT_TRAM",
+                        "CAT_RAIL",
+                        "CAT_FUNI",
+                        "CAT_GONDOLA",
+                        "CAT_FERRY"
+                    ],
+                    "type": "string",
+                    "title": "Oi Vehicle Category"
+                },
+                "type": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "for debugging only, non-null and non-empty if provided"
+                },
+                "has_trailer": {
+                    "additionalProperties": true,
+                    "type": "boolean"
+                },
+                "nof_vehicles": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "\u003e1 indicates coupling (tram or train)"
+                },
+                "weight": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[kg, 0 decimals] sum for whole train"
+                },
+                "length": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, max. 2 decimals] sum for whole train"
+                },
+                "width": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, max. 2 decimals] max for whole train"
+                },
+                "height": {
+                    "additionalProperties": true,
+                    "type": "number",
+                    "description": "[m, max. 2 decimals] max for whole train"
+                },
+                "capacity": {
+                    "additionalProperties": true,
+                    "type": "integer",
+                    "description": "[pax] sum for whole train"
+                },
+                "plate": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "non-null and non-empty if provided"
+                },
+                "vin": {
+                    "additionalProperties": true,
+                    "type": "string",
+                    "description": "non-null and non-empty if provided"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ptx Oi Vehicle Info"
+        }
+    }
+}
