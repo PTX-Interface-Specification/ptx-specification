@@ -50,12 +50,6 @@ This repository will contain:
 - The **authoritative JSON Schemas** for PTX messages exchanged on the wire.
 - Supporting information, and possibly tools and scripts.
 
-## Status
-
-> **Draft** – initial structure under development.  
-> The specification is being prepared collaboratively by representatives of
-multiple OBU and IBIS vendors. Contributions and review comments are welcome.
-
 ## Governance
 
 The specification is edited and maintained by a group of maintainers from the
