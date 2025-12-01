@@ -64,7 +64,7 @@ The PTX Interface Specification uses **semantic versioning** (major.minor.patch)
 
 - **Minor releases** (e.g. `2.1.0`) will introduce new messages or fields.  
   In such cases, a new schema version appears under dedicated
-  directories such as `models/protobuf/v2.1/`.
+  directories such as `schemas/proto/v2.1/`.
 
 - **Major releases** (e.g. `3.0.0`) will break compatibility.  
   The express goal is not having to create any major releases in the future.
