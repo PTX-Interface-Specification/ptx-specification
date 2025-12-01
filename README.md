@@ -70,7 +70,7 @@ The PTX Interface Specification uses **semantic versioning** (major.minor.patch)
   The express goal is not having to create any major releases in the future.
 
 A PTX specification version **2.1.0** is planned for release by the end of **2026**.
-It will be **fully compatible** with version 2.0 and will introduce enhancements
+It will be **fully compatible** with version 2.0.x and will introduce enhancements
 with a particular focus on **safety-related functionality**.
 
 ## License
