@@ -7,7 +7,7 @@ License (CC BY 4.0)**.
 This applies to all files under:
 
 - `spec/` (all versions)
-- `docs/presentations/` (and any subfolders)
+- `docs/` (and any subfolders)
 
 A human-readable summary of the license is available at:
 https://creativecommons.org/licenses/by/4.0/
