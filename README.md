@@ -8,7 +8,7 @@ C-ITS On-Board Units (OBUs) and ITCS On-Board Computers (IBIS) used in public tr
 ## What is the PTX Interface Specification?
 
 The **PTX Interface Specification** defines an open, vendor-neutral interface
-between **C-ITS On-Board Units (OBUs)** and **IBIS / ITCS on-board computers**
+between **C-ITS On-Board Units (OBU)** and **ITCS On-Board Computers (IBIS)**
 used in **public transport vehicles**. It enables interoperable exchange of
 vehicle position, operation status, service identifiers, and C-ITS events
 between independent onboard systems.
