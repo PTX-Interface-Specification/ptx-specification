@@ -1,7 +1,8 @@
-# Benefits of the PTX Interface Specification for Public Transport Operators
+# Benefits of the PTX Interface Specification<br>for Public Transport Operators
 
 The PTX Interface Specification defines a neutral, vendor-independent interface
-between C-ITS On-Board Units (OBUs) and IBIS / ITCS on-board computers.  
+between C-ITS On-Board Units (OBUs) and ITCS On-Board Computers (IBIS).  
+
 This document summarizes the benefits for public transport operators, with a
 focus on procurement, competition, interoperability, and lifecycle management.
 
@@ -41,7 +42,7 @@ The result is a more predictable and maintainable system architecture.
 
 PTX provides a **stable reference** for public procurement:
 
-- Tenders can simply state “OBUs and IBIS must support PTX v2.0.x”.
+- Tenders can simply state “OBUs and IBIS must support PTX v2.x”.
 - Requirements become objective and checkable.
 - Bid evaluation becomes fairer and more transparent.
 - Procurement departments avoid maintaining multiple versions of
@@ -83,8 +84,7 @@ needs rather than the roadmap of a single vendor.
 By removing proprietary barriers:
 
 - New vendors can enter the market more easily.
-- Innovations—e.g. new C-ITS features, intelligent diagnostics, or mobility
-  services—can be integrated without depending on proprietary interfaces.
+- Innovations can be integrated without depending on proprietary interfaces.
 - Third-party integrators and tool providers can support PTX consistently.
 
 This leads to a more resilient, dynamic, and competitive public transport
