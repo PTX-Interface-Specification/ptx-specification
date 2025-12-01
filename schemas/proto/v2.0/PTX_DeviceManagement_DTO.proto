@@ -1,7 +1,3 @@
-/**
- * (C) 2024, Trapeze Switzerland GmbH. All rights reserved.
- */
-
 syntax = "proto3";
 
 package io.ptx.v2.dm; // tentative
