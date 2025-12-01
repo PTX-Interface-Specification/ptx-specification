@@ -27,10 +27,10 @@ vendors, and integrators in building interoperable, future-proof public
 transport fleets.
 
 PTX is especially relevant for:
-- Public transport operators and PTO-owned fleets  
-- Transport authorities and regulators  
+- Public transport operators (PTOs) and fleet owners  
+- Public transport authorities (PTAs) and regulators  
 - C-ITS OBU vendors  
-- IBIS / ITCS / fleet management system vendors  
+- ITCS or AVL system vendors  
 - Integrators, engineering consultancies, and ITS suppliers  
 
 The goal of PTX is to define a stable, interoperable interface so that:
@@ -57,8 +57,21 @@ participating companies.
 
 ## Evolution
 
-A specification version 2.1 is foreseen by the end of 2026. It will build on 2.0 in
-a compatible way and focus on safety.
+The PTX Interface Specification uses **semantic versioning** (major.minor.patch):
+
+- **Patch releases** (e.g. `2.0.1`) are documentation-only updates and do  
+  **not** modify the wire format. Protobuf and JSON Schema remain unchanged.
+
+- **Minor releases** (e.g. `2.1.0`) will introduce new messages or fields.  
+  In such cases, a new schema version appears under dedicated
+  directories such as `models/protobuf/v2.1/`.
+
+- **Major releases** (e.g. `3.0.0`) will break compatibility.  
+  The express goal is not having to create any major releases in the future.
+
+A PTX specification version **2.1.0** is planned for release by the end of **2026**.
+It will be **fully compatible** with version 2.0 and will introduce enhancements
+with a particular focus on **safety-related functionality**.
 
 ## License
 
