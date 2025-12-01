@@ -7,7 +7,7 @@ C-ITS On-Board Units (OBUs) and ITCS On-Board Computers (IBIS) used in public tr
 
 The goal of PTX is to define a stable, interoperable interface so that:
 
-- Different C-ITS OBU vendors can integrate with different IBIS / ITCS systems.
+- OBUs and IBISs from different vendors are interoperable.
 - Implementations share a common, versioned set of messages and semantics.
 - Changes to the specification are discussed openly and applied consistently.
 
