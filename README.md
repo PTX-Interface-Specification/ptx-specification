@@ -5,6 +5,8 @@ Interface between C-ITS On-Board Units (OBU) and ITCS On-Board Computers (IBIS) 
 This repository hosts the neutral, multi-vendor **PTX Interface Specification** between
 C-ITS On-Board Units (OBUs) and ITCS On-Board Computers (IBIS) used in public transport.
 
+PTX stands for "Public Transport to Everything", inspired by the term "V2X".
+
 ## What is the PTX Interface Specification?
 
 The **PTX Interface Specification** defines an open, vendor-neutral interface
