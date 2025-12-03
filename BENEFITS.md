@@ -13,12 +13,12 @@ focus on procurement, competition, interoperability, and lifecycle management.
 PTX enables operators to reference a **single, open, technical standard** in
 tenders:
 
-- Any OBU or IBIS vendor that implements PTX can participate.
-- Operators avoid proprietary protocols that block competitive procurement.
+- Any OBU or IBIS vendor that implements PTX can participate
+- Operators avoid proprietary protocols that block competitive procurement
 - Hardware and software components can be replaced independently, instead of
-  requiring fleet-wide vendor lock-in.
+  requiring fleet-wide vendor lock-in
 - Offers from multiple vendors become directly comparable on functionality,
-  quality, and cost.
+  quality, and cost
 
 This strengthens competition and reduces long-term dependence on single vendors.
 
@@ -28,11 +28,11 @@ This strengthens competition and reduces long-term dependence on single vendors.
 
 A standardised interface eliminates project-specific adaptations:
 
-- On-board components from different vendors integrate consistently.
-- Engineering effort, commissioning time, and troubleshooting effort are reduced.
-- Operators avoid custom middleware or ad-hoc conversions.
+- On-board components from different vendors integrate consistently
+- Engineering effort, commissioning time, and troubleshooting effort are reduced
+- Operators avoid custom middleware or ad-hoc conversions
 - Upgrades (e.g. replacing only the OBU or only the IBIS) become simpler and
-  less risky.
+  less risky
 
 The result is a more predictable and maintainable system architecture.
 
@@ -42,11 +42,11 @@ The result is a more predictable and maintainable system architecture.
 
 PTX provides a **stable reference** for public procurement:
 
-- Tenders can simply state “OBUs and IBIS must support PTX v2.x”.
-- Requirements become objective and checkable.
-- Bid evaluation becomes fairer and more transparent.
+- Tenders can simply state “OBUs and IBIS must support PTX v2.x”
+- Requirements become objective and checkable
+- Bid evaluation becomes fairer and more transparent
 - Procurement departments avoid maintaining multiple versions of
-  vendor-specific specifications.
+  vendor-specific specifications
 
 This improves legal clarity, reduces ambiguity, and supports transparent
 procurement processes.
@@ -57,10 +57,10 @@ procurement processes.
 
 By enabling modularity and interoperability:
 
-- Operators can upgrade OBU or IBIS systems independently.
-- Entire fleets do not need to be replaced when one subsystem reaches end-of-life.
-- Spare parts, maintenance, and training become less vendor-specific.
-- Competition across the lifecycle leads to more favourable pricing.
+- Operators can upgrade OBU or IBIS systems independently
+- Entire fleets do not need to be replaced when one subsystem reaches end-of-life
+- Spare parts, maintenance, and training become less vendor-specific
+- Competition across the lifecycle leads to more favourable pricing
 
 PTX reduces total cost of ownership and helps protect long-term investments.
 
@@ -70,9 +70,9 @@ PTX reduces total cost of ownership and helps protect long-term investments.
 
 PTX uses a clear, forward-compatible versioning model:
 
-- Major/minor versions define compatibility expectations.
-- Patch versions allow documentation improvements without breaking wire formats.
-- New features can be added in a controlled and predictable manner.
+- Major/minor versions define compatibility expectations
+- Patch versions allow documentation improvements without breaking wire formats
+- New features can be added in a controlled and predictable manner
 
 An open, multi-vendor governance model ensures that PTX evolves with real-world
 needs rather than the roadmap of a single vendor.
@@ -83,9 +83,9 @@ needs rather than the roadmap of a single vendor.
 
 By removing proprietary barriers:
 
-- New vendors can enter the market more easily.
-- Innovations can be integrated without depending on proprietary interfaces.
-- Third-party integrators and tool providers can support PTX consistently.
+- New vendors can enter the market more easily
+- Innovations can be integrated without depending on proprietary interfaces
+- Third-party integrators and tool providers can support PTX consistently
 
 This leads to a more resilient, dynamic, and competitive public transport
 technology ecosystem.
