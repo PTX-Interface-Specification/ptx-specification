@@ -78,5 +78,5 @@ with a particular focus on **safety-related functionality**.
 
 Unless otherwise noted, the contents of this repository are licensed under
 the [Apache License 2.0](LICENSE).  
-The PDFs are provided under the CC BY 4.0 licence .
+The PDFs are provided under the [CC BY 4.0 licence](DOCUMENTATION-LICENSE.md).
 
