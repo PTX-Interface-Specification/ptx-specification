@@ -11,7 +11,7 @@ The **PTX Interface Specification** defines an open, vendor-neutral interface
 between **C-ITS On-Board Units ("OBU")** and **ITCS On-Board Computers ("IBIS")**
 used in **public transport vehicles**. It enables interoperable exchange of
 vehicle position, operation status, service identifiers, and C-ITS events
-between independent onboard systems.
+between independent onboard systems. The protocol is based on MQTT to allow easy integration.
 
 PTX improves the public transport technology ecosystem by:
 
